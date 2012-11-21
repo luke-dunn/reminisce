@@ -1,0 +1,61 @@
+#!/usr/bin/python
+import cgi
+from pprint import pprint as pp
+import cgitb; cgitb.enable()  # for troubleshooting
+print "Content-type: text/html"
+print
+ 
+form = cgi.FieldStorage()
+c={}
+
+name = form.getvalue('name')
+username = name.replace(' ','_')
+
+for x in sorted(form.keys()):
+    if len(x) == 5:
+        label = form.getvalue(x)
+        c[label] = {}
+    if len(x) == 6:
+        c[label]['emotion'] = form.getvalue(x)
+    if len(x) == 7:
+        c[label]['place'] = form.getvalue(x)
+    if len(x) == 8:
+        c[label]['year'] = form.getvalue(x)
+
+mem_filename = username+'_mems.py'
+mem_file = open(mem_filename,'w')
+mem_file.write('#!/usr/bin/python\n')
+
+mem_file.write('mems=') 
+pp(c,mem_file)
+ 
+mem_file.close()
+
+from subprocess import call
+call(["chmod","777",mem_filename])
+
+print '<html><head>'
+print '<link rel="stylesheet" href="../a.css" type="text/css" />'
+
+print '</head><body><div><h4>here are the memories you just classified, '+name+'</h4><table>'
+
+print '<tr><th><strong>memory</strong></th><th><strong>emotion</strong></th><th><strong>place</strong></th><th><strong>date</strong></th></tr>'
+counter =0
+for x in c:
+    if counter % 2 ==1:
+        print '<tr>'
+    else:
+        print '<tr class="a">'
+    counter+=1
+    print '<td>'+x+'</td>'
+    for y in c[x]:
+        print '<td>'+c[x][y]+'</td>'
+    print '</tr>'
+print '</table><br /><br />'
+print '<p>We have saved these memories in our database for you... Later you can access them, add to them and share them with others on the site. If you like the concept then <a href="mailto:luke.dunn@gmail.com">tell us</a>!</p>'
+
+print '</div></body></html>'
+
+
+
+

@@ -1,0 +1,12 @@
+#!/usr/bin/python
+
+import cgi
+import cgitb; cgitb.enable()  # for troubleshooting
+from ident import rememberer
+if rememberer:
+    from templates import known
+    known = known.replace('**rememberer**',rememberer)
+    print known
+else:
+	from templates import welcome
+    print welcome
